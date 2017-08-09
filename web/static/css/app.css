@@ -1,0 +1,9 @@
+/* This file is for your main application css. */
+
+section.container {
+  max-width: 80rem;
+}
+
+section.container.auth {
+  max-width: 35rem;
+}

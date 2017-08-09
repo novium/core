@@ -1,0 +1,29 @@
+<section class="container auth">
+  <h1>Login</h1>
+  
+  <%= form_tag @callback_url, method: "post" do %>
+    <fieldset>
+      <label for="email">email</label>
+      <input type="email" name="email" value="<%= 
+        case Map.fetch(@conn.params, "email") do
+          {:ok, email} -> email
+          _ -> ""
+        end
+       %>">
+
+      <label for="password">Password</label>
+      <input type="password" name="password">
+
+      <div class="clearfix">
+        <button>Login</button>
+        <div class="float-right">
+          <button class="button button-outline" formaction="<%= @callback_url %>?reg=1">register</button>
+        </div>
+      </div>
+    </fieldset>
+  <% end %>
+
+  <a href="#" class="button button-outline" style="width: 100%; border-color: blue; color: blue">Facebook</a>
+  <a href="#" class="button button-outline" style="width: 100%; border-color: red; color: red">Google</a>
+  <a href="#" class="button button-outline" style="width: 100%; border-color: grey; color: grey">Steam</a>
+</section>

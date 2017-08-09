@@ -1,0 +1,15 @@
+<section class="container">
+  <h1>Register</h1>
+
+  <%= form_tag @callback_url, method: "post" do %>
+    <fieldset>
+      <label for="username">Username</label>
+      <input type="text" id="username">
+
+      <label for="password">Password</label>
+      <input type="password" id="password">
+
+      <button>Login</button>
+    </fieldset>
+  <% end %>
+</section>

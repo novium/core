@@ -7,8 +7,6 @@ defmodule Auth do
   alias Core.User
   alias Comeonin.Pbkdf2, as: Comeonin
 
-  import Ecto.Query
-
   # Identity provider
   @doc """
   Create new user
@@ -30,7 +28,8 @@ defmodule Auth do
 
       case result do
         {:ok, user} -> {:ok, user}
-        {:error, reason} -> Repo.rollback(reason)
+        {:error, reason} ->
+          Repo.rollback(reason)
       end
     else
       {:error, reason} -> {:error, reason}

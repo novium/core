@@ -8,7 +8,7 @@ defmodule Core.User do
   @primary_key {:uid, :integer, autogenerate: false}
   @derive {Phoenix.Param, key: :uid}
   schema "users" do
-    field :oid, :string # OpenID
+    field :oid, :binary_id # OpenID
     field :email, :string
     field :nick, :string
 
@@ -24,8 +24,8 @@ defmodule Core.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:uid, :email, :nick, :password, :is_admin])
-    |> validate_required([:uid, :email, :is_admin])
+    |> cast(params, [:uid, :oid, :email, :nick, :password, :is_admin])
+    |> validate_required([:uid, :oid, :email, :is_admin])
     |> validate_length(:nick, max: 32)
     |> unique_constraint(:email)
     |> unique_constraint(:uid)

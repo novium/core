@@ -12,7 +12,7 @@ defmodule Core.Router do
 
   pipeline :browser_auth do
     plug Guardian.Plug.VerifySession
-    # plug Guardian.Plug.LoadResource, don't really care usually
+    plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
   end
 
@@ -39,11 +39,24 @@ defmodule Core.Router do
     post "/:provider/callback", AuthController, :callback
   end
 
-  def unauthenticated(conn, _params) do
+  scope "/oauth", Core do
+    scope "/v1" do
+      pipe_through [:browser, :browser_auth]
+      get "/authorize", OauthController, :authorize
+    end
+  end
+
+  scope "/dev", Core do
+    pipe_through :browser
+
+    get "/", DevController, :index
+    post "/oauthclient", DevController, :create_oauthclient
+  end
+
+  def unauthenticated(conn, params) do
     conn
-    |> put_status(401)
     |> put_flash(:info, "Please log in")
-    |> redirect(to: "/auth/identity")
+    |> Phoenix.Controller.redirect(to: "/auth/identity?url=" <> conn.request_path <> "&" <> conn.query_string)
   end
 
   # Other scopes may use custom stacks.

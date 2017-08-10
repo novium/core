@@ -1,6 +1,7 @@
 defmodule Core.AuthController do
   use Core.Web, :controller
   plug Ueberauth
+  plug Guardian.Plug.VerifySession
   plug Guardian.Plug.EnsureNotAuthenticated, handler: Core.AuthController
 
   alias Auth
@@ -12,7 +13,7 @@ defmodule Core.AuthController do
 
   def request(conn, %{"provider" => provider} = _params) do
     case provider do
-      "identity" -> render(conn, "request.html", callback_url: Helpers.callback_url(conn))
+      "identity" -> render(conn, "request.html", callback_url: (Helpers.callback_url(conn) <> "?" <> conn.query_string))
       _ = provider -> conn
                       |> put_flash(:error, "Selected provider (#{provider}) doesn't exist")
                       |> redirect(to: "/")
@@ -36,12 +37,12 @@ defmodule Core.AuthController do
         conn
         |> Guardian.Plug.sign_in(user)
         |> put_flash(:info, "registered") 
-        |> redirect(to: "/")
+        |> redirect_back(params)
       {:error, reason} ->
         %{"email" => email} = params
         conn
         |> put_flash(:error, reason)
-        |> redirect(to: "/auth/identity?email=" <> email)
+        |> redirect(to: "/auth/identity?email=" <> email <> "&" <> conn.query_string)
     end
   end
 
@@ -52,12 +53,12 @@ defmodule Core.AuthController do
         conn
         |> Guardian.Plug.sign_in(user)
         |> put_flash(:info, "Logged in!")
-        |> redirect(to: "/")
+        |> redirect_back(params)
       {:error, reason} ->
         %{"email" => email} = params
         conn
         |> put_flash(:info, "Something wasn't right, try again!")
-        |> redirect(to: "/auth/identity?email=" <> email)
+        |> redirect(to: "/auth/identity?email=" <> email <> "&" <> conn.query_string)
     end
   end
 
@@ -68,7 +69,12 @@ defmodule Core.AuthController do
     |> redirect(to: "/")
   end
 
-  def already_authenticated(conn, _param) do
+  def already_authenticated(conn, _params) do
     redirect(conn, to: "/")
   end
+
+  defp redirect_back(conn, %{"url" => url} = params) do
+    conn |> redirect(to: url <> "?" <> conn.query_string)
+  end
+  defp redirect_back(conn, _params), do: conn |> redirect(to: "/")
 end

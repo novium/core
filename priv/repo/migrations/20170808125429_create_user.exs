@@ -7,7 +7,7 @@ defmodule Core.Repo.Migrations.CreateUser do
   def change do
     create table(:users, primary_key: false) do
       add :uid, :"bigint unsigned", primary_key: true
-      add :oid, :string
+      add :oid, :binary_id
       add :email, :string
       add :nick, :string
 
@@ -18,7 +18,9 @@ defmodule Core.Repo.Migrations.CreateUser do
       timestamps()
     end
 
-    create index(:users, [:uid, :email, :nick, :oid])
-    create unique_index(:users, [:email, :uid, :oid])
+    create index(:users, [:nick])
+    create unique_index(:users, [:uid])
+    create unique_index(:users, [:email])
+    create unique_index(:users, [:oid])
   end
 end

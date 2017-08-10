@@ -1,0 +1,11 @@
+<section class="container">
+  <h1>auth request</h1>
+  <p><%= @client.name %> is requesting info</p>
+  <ul>
+    <li>This</li>
+    <li>and this</li>
+    <li>and and this!</li>
+  </ul>
+  <a href="#" class="button">accept</a>
+  <a href="#" class="button button-outline">deny</a>
+</section>

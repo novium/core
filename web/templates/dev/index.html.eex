@@ -1,0 +1,13 @@
+create new oauth client
+<%= form_tag @callback, method: "post" do %>
+  <label for="name">name</label>
+  <input type="text" name="name">
+
+  <label for="url">url</label>
+  <input type="text" name="url">
+
+  <label for="redirect">redirect</label>
+  <input type="text" name="redirect">
+
+  <button>submit</button>
+<% end %>

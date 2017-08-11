@@ -19,7 +19,6 @@ defmodule Auth do
       result = User.changeset(
         %User{},
         %{
-          uid: Snowflake.generate(),
           oid: Ecto.UUID.generate(),
           email: auth.info.email,
           password: hash_password(auth.credentials.other.password)
@@ -29,7 +28,7 @@ defmodule Auth do
       case result do
         {:ok, user} -> {:ok, user}
         {:error, reason} ->
-          Repo.rollback(reason)
+          {:error, "Did you forget your password? Seems like your email is already registered"}
       end
     else
       {:error, reason} -> {:error, reason}
@@ -45,6 +44,7 @@ defmodule Auth do
          :ok <- validate_mail(auth.info),
          :ok <- validate_pass(auth.credentials),
          user <- Repo.get_by(Core.User, email: email),
+         false <- is_nil(user),
          true <- check_password(auth.credentials.other.password, user.password)
     do
       {:ok, user}

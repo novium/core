@@ -1,7 +1,7 @@
 <section class="container auth">
   <h1>Login</h1>
   
-  <%= form_tag @callback_url, method: "post" do %>
+  <%= form_tag ("/auth/identity/callback"), method: "post" do %>
     <fieldset>
       <label for="email">email</label>
       <input type="email" name="email" value="<%= 
@@ -17,7 +17,7 @@
       <div class="clearfix">
         <button>Login</button>
         <div class="float-right">
-          <button class="button button-outline" formaction="<%= @callback_url %>?reg=1">register</button>
+          <button class="button button-outline" formaction="/auth/identity/callback?reg=1">register</button>
         </div>
       </div>
     </fieldset>

@@ -11,9 +11,10 @@ defmodule Core.AuthController do
     render(conn, "index.html")
   end
 
-  def request(conn, %{"provider" => provider} = _params) do
+  def request(conn, %{"provider" => provider} = params) do
     case provider do
-      "identity" -> render(conn, "request.html", callback_url: (Helpers.callback_url(conn) <> "?" <> conn.query_string))
+      "identity" ->
+        conn |> render("request.html")
       _ = provider -> conn
                       |> put_flash(:error, "Selected provider (#{provider}) doesn't exist")
                       |> redirect(to: "/")
@@ -42,7 +43,7 @@ defmodule Core.AuthController do
         %{"email" => email} = params
         conn
         |> put_flash(:error, reason)
-        |> redirect(to: "/auth/identity?email=" <> email <> "&" <> conn.query_string)
+        |> redirect(to: "/auth/identity?email=" <> email)
     end
   end
 
@@ -73,8 +74,13 @@ defmodule Core.AuthController do
     redirect(conn, to: "/")
   end
 
-  defp redirect_back(conn, %{"url" => url} = params) do
-    conn |> redirect(to: url <> "?" <> conn.query_string)
+  defp redirect_back(conn, _params) do
+    case get_session(conn, :auth_redirect) do
+      nil -> conn |> redirect(to: "/")
+      url ->
+        conn
+        |> put_session(:auth_redirect, nil)
+        |> redirect(external: url)
+    end
   end
-  defp redirect_back(conn, _params), do: conn |> redirect(to: "/")
 end

@@ -9,6 +9,9 @@ defmodule GuardianSerializer do
   end
 
   def from_token(token) do
-    {:ok, token}
+    case Repo.get_by(Core.User, oid: token) do
+      nil -> {:error, "No user"}
+      user -> {:ok, {:ok, user}}
+    end
   end
 end

@@ -3,7 +3,7 @@ defmodule Core.Repo.Migrations.CreateOauthCodes do
 
   def change do
     create table :oauth_codes do
-      add :code, :string
+      add :code, :binary_id
       add :user_id, :binary_id
       add :client_id, :binary_id
 

@@ -7,6 +7,7 @@ defmodule Core.Repo.Migrations.CreateOauthClients do
       add :name, :string
       add :url, :string
       add :image, :string
+      add :user_id, references(:users)
 
       add :redirect, :string
       add :secret, :binary_id

@@ -5,7 +5,7 @@ defmodule Core.OAuth.Code do
   alias Core.OAuth.Code
 
   schema "oauth_codes" do
-    field :code, :string
+    field :code, :binary_id
     field :user_id, :binary_id
     field :client_id, :binary_id
 

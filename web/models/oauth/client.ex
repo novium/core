@@ -12,9 +12,11 @@ defmodule Core.OAuth.Client do
     field :name, :string
     field :url, :string
     field :image, :string
+    belongs_to :user, Core.User
 
     field :redirect, :string
     field :secret, :binary_id
+    has_many :oauth_authorizations, Core.OAuth.Authorization
 
     field :trusted, :boolean
 

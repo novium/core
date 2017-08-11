@@ -13,7 +13,12 @@ defmodule Core.Router do
   pipeline :browser_auth do
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
+    plug Guardian.Plug.EnsureResource
     plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  end
+
+  pipeline :api do
+    plug :accepts, ["json"]
   end
 
   scope "/", Core do
@@ -39,10 +44,19 @@ defmodule Core.Router do
     post "/:provider/callback", AuthController, :callback
   end
 
+  # OAuth
   scope "/oauth", Core do
+    # Frontend
     scope "/v1" do
       pipe_through [:browser, :browser_auth]
       get "/authorize", OauthController, :authorize
+      post "/authorize", OauthController, :authorize
+    end
+
+    # Backend
+    scope "/v1" do
+      pipe_through :api
+      post "/token", OauthController, :token
     end
   end
 
@@ -55,8 +69,12 @@ defmodule Core.Router do
 
   def unauthenticated(conn, params) do
     conn
+    |> put_session(:auth_redirect, 
+      "http://" <> conn.host 
+      <> ":" <> Integer.to_string(conn.port)
+      <> conn.request_path <> "?" <> conn.query_string)
     |> put_flash(:info, "Please log in")
-    |> Phoenix.Controller.redirect(to: "/auth/identity?url=" <> conn.request_path <> "&" <> conn.query_string)
+    |> Phoenix.Controller.redirect(to: "/auth/identity")
   end
 
   # Other scopes may use custom stacks.

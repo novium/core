@@ -1,11 +1,16 @@
 <section class="container">
   <h1>auth request</h1>
-  <p><%= @client.name %> is requesting info</p>
+  <p><%= @client.name %> is requesting info <%= @scope %> </p>
   <ul>
     <li>This</li>
     <li>and this</li>
     <li>and and this!</li>
   </ul>
-  <a href="#" class="button">accept</a>
-  <a href="#" class="button button-outline">deny</a>
+  
+  <%= form_tag @conn.request_path, method: "post" do %>
+    <input type="hidden" name="client_id" value="<%= @client.cid %>">
+    <input type="hidden" name="scope" value="<%= @scope %>">
+    <button>accept</button>
+    <a href="#" class="button button-outline">deny</a>
+  <% end %>
 </section>

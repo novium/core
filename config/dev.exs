@@ -7,7 +7,7 @@ use Mix.Config
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 config :core, Core.Endpoint,
-  http: [port: 4000],
+  http: [port: 4001],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
@@ -36,7 +36,7 @@ config :phoenix, :stacktrace_depth, 20
 config :core, Core.Repo,
   adapter: Ecto.Adapters.MySQL,
   username: "root",
-  password: "",
+  password: "nopassword",
   database: "core_dev",
   hostname: "localhost",
   pool_size: 10

@@ -5,18 +5,24 @@
 ## Features
 * Password login
 * OAuth authorization server (server side flow // access_token)
+* User profiles
+* Ueberauth package
+
+## Working on
+* Check if already authorize
 
 ## TODO
 This is currently planned:
-* User profiles
 * "Social" login (Google, Facebook etc.) 
 * Administration interface
 * API:s for the former things mentioned
 * "Plug n' Play" package so that authentication is easier to set up for phoenix
 * Documentation, documentation, and did I say, documentation?
 * Rewrite things in a more efficient and less sloppy manner
-* OAuth password flow for "trusted" apps
+* OAuth password flow for "trusted" apps*
 * OAuth client-side flow
+
+* Maybe not.
 
 ## Usage
 Run in development mode:

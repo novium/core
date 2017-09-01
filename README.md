@@ -19,10 +19,10 @@ This is currently planned:
 * "Plug n' Play" package so that authentication is easier to set up for phoenix
 * Documentation, documentation, and did I say, documentation?
 * Rewrite things in a more efficient and less sloppy manner
-* OAuth password flow for "trusted" apps*
+* OAuth password flow for "trusted" apps ¤
 * OAuth client-side flow
 
-* Maybe not.
+¤ Maybe not.
 
 ## Usage
 Run in development mode:

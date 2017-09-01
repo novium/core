@@ -17,7 +17,9 @@ defmodule Core.OauthController do
   def authorize(
     %{method: "GET"} = conn,
     %{"response_type" => "code", "client_id" => cid, "scope" => scope} = params, user, claims
-  ) do    
+  ) do
+    if String.length(scope) == 0, do: conn |> put_status(400) |> text("Malformed request")
+    
     case Repo.get_by(Client, cid: cid) do
       nil ->
         conn
@@ -131,8 +133,8 @@ defmodule Core.OauthController do
       end
     else
       {:error, reason} ->
-        json(conn, %{error: "invalid_request", reason: "reason"})
-      _ -> json(conn, %{error: "invalid_request"})
+        json(conn, %{error: "invalid_request", reason: "none"})
+      _ -> json(conn, %{error: "invalid_request", reason: "none"})
     end
   end
 
@@ -141,7 +143,6 @@ defmodule Core.OauthController do
   end
 
   def userinfo(conn, params, _user, _claims) do
-    IO.puts(get_req_header(conn, "authorization"))
     if Enum.count(get_req_header(conn, "authorization")) > 0 do
       case token_from_header(get_req_header(conn, "authorization")) do
         {:ok, token} -> conn |> userinfo(token)

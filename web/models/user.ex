@@ -6,7 +6,7 @@ defmodule Core.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :oid, :binary_id # OpenID
+    field :oid, :binary_id # Open "ID"
     field :email, :string
     field :nick, :string
     field :password, :string

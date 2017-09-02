@@ -16,18 +16,22 @@ defmodule Core.OauthController do
   """
   def authorize(
     %{method: "GET"} = conn,
-    %{"response_type" => "code", "client_id" => cid, "scope" => scope} = params, user, claims
+    %{"response_type" => "code", "client_id" => cid, "scope" => scope} = params, {:ok, user}, claims
   ) do
     if String.length(scope) == 0, do: conn |> put_status(400) |> text("Malformed request")
     
-    case Repo.get_by(Client, cid: cid) do
+    case Repo.get_by(Core.OAuth.Authorization, user_id: user.id) do # TODO: Check scopes!
       nil ->
-        conn
-        |> put_status(400)
-        |> text("Malformed request")
-      client ->
-        conn
-        |> render("authorize.html", client: client, scope: scope)
+        case Repo.get_by(Client, cid: cid) do
+          nil ->
+            conn
+            |> put_status(400)
+            |> text("Malformed request")
+          client ->
+            conn
+            |> render("authorize.html", client: client, scope: scope)
+        end
+       _ -> authorize_f(conn, cid, scope, user)
     end
   end
 
@@ -38,9 +42,13 @@ defmodule Core.OauthController do
     %{method: "POST"} = conn,
     %{"client_id" => client_id, "scope" => scope}, {:ok, user}, claims
   ) do
+    authorize_f(conn, client_id, scope, user)
+  end
+
+  defp authorize_f(conn, client_id, scope, user) do
     with client <- Repo.get_by(Core.OAuth.Client, cid: client_id),    # Get client
       false <- is_nil(client),                                        # Check that client exists
-      {:ok, code} <- create_code(user, client_id, scope)              # Create code
+      {:ok, code} <- create_code(user, client.id, scope)              # Create code
     do
       redirect(conn, external: client.redirect <> "?code=" <> code.code)
     else
@@ -51,11 +59,9 @@ defmodule Core.OauthController do
 
   defp create_code(user, client_id, scope) do
     Code.changeset(
-      %Code{},
+      %Code{user_id: user.id, oauth_client_id: client_id},
       %{
         code: Ecto.UUID.generate,
-        user_id: user.oid,
-        client_id: client_id,
         scope: scope
       }
     ) |> Repo.insert
@@ -89,57 +95,76 @@ defmodule Core.OauthController do
     with client <- Repo.get_by(Core.OAuth.Client, cid: client_id),
       code <- Repo.get_by(Code, code: code),
       false <- is_nil(client) || is_nil(code),
-      user_db <- Repo.get_by(Core.User, oid: code.user_id),
+      user_db <- Repo.get(Core.User, code.user_id),
       false <- is_nil(user_db),
       true <-
         client.cid == client_id
         && client.secret == client_secret
         && client.redirect == redirect
-        && code.client_id == client_id,
-      time <-
-        NaiveDateTime.utc_now 
-        |> NaiveDateTime.add(60 * 60 * 24 * 30) # Expires in 1 month
-        |> NaiveDateTime.diff(NaiveDateTime.utc_now),
-      {:ok, auth} <-
-        %Authorization{user_id: user_db.id, oauth_client_id: client.id}
+        && code.oauth_client_id == client.id,
+      scope <- decode_scopes(code.scope),
+      auth <- Repo.get_by(Core.OAuth.Authorization, user_id: code.user_id)
+    do
+      if is_nil(auth) do
+        changeset = %Authorization{user_id: user_db.id, oauth_client_id: client.id}
         |> Authorization.changeset(
           %{
             token: Ecto.UUID.generate,
             refresh_token: Ecto.UUID.generate,
             scope: code.scope,
-            expires: time
+            expires: expires(60 * 60 * 24 * 30)
           }
         )
-        |> Repo.insert,
-      scope <- decode_scopes(code.scope)
-    do
-      if find_scope(scope, "openid") do # OpenID Connect request
-        # create_jwt()
-        json(conn, %{
-          access_token: auth.token, refresh_token: auth.refresh_token, expires: auth.expires, email: user_db.email,
-          id_token: %{
-            iss: @issuer,
-            sub: user_db.oid,
-            email: user_db.email,
-            email_verified: true, # TODO: Email verification
-            aud: code.client_id,
-            iat: NaiveDateTime.utc_now,
-            exp: NaiveDateTime.utc_now |> NaiveDateTime.add(60 * 60 * 24),
-            nonce: "" # TODO: nonce for flow replay attacks
-          }
-        })
-      else
-        json(conn, %{access_token: auth.token, refresh_token: auth.refresh_token, expires: auth.expires, email: user_db.email})
+
+        case Repo.insert(changeset) do
+          {:ok, auth} ->
+            if find_scope(scope, "openid") do
+              openid_end(conn, user_db, code, auth)
+            else
+              oauth_end(conn, user_db, auth)
+            end
+          {:error, reason} -> Repo.rollback(reason)
+        end
+      else # TODO: Renew authorization
+        if find_scope(scope, "openid") do
+          openid_end(conn, user_db, code, auth)
+        else
+          oauth_end(conn, user_db, auth)
+        end
       end
     else
-      {:error, reason} ->
-        json(conn, %{error: "invalid_request", reason: "none"})
       _ -> json(conn, %{error: "invalid_request", reason: "none"})
     end
   end
 
   defp create_jwt() do
     # Stub
+  end
+
+  defp openid_end(conn, user, code, auth) do
+    json(conn, %{
+      access_token: auth.token, refresh_token: auth.refresh_token, expires: auth.expires, email: user.email,
+      id_token: %{
+        iss: @issuer,
+        sub: user.oid,
+        email: user.email,
+        email_verified: true, # TODO: Email verification
+        aud: code.client_id,
+        iat: NaiveDateTime.utc_now,
+        exp: NaiveDateTime.utc_now |> NaiveDateTime.add(60 * 60 * 24),
+        nonce: "" # TODO: nonce for flow replay attacks
+      }
+    })
+  end
+
+  defp oauth_end(conn, user, auth) do
+    json(conn, %{access_token: auth.token, refresh_token: auth.refresh_token, expires: auth.expires, email: user.email})
+  end
+
+  defp expires(seconds) do
+    NaiveDateTime.utc_now 
+    |> NaiveDateTime.add(seconds)
+    |> NaiveDateTime.diff(NaiveDateTime.utc_now)
   end
 
   def userinfo(conn, params, _user, _claims) do

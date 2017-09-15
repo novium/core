@@ -88,10 +88,9 @@ defmodule Core.OauthController do
         )
         |> Repo.insert
     do
-      json(conn, %{access_token: auth.token, refresh_token: auth.refresh_token, expires: auth.expires})
+      json(conn, %{access_token: auth.token, refresh_token: auth.refresh_token, expires: auth.expires, email: user_db.email})
     else
-      {:error, reason} -> 
-        Repo.rollback(reason)
+      {:error, reason} ->
         json(conn, %{error: "invalid_request", reason: "reason"})
       _ -> json(conn, %{error: "invalid_request"})
     end

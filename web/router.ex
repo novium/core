@@ -12,9 +12,9 @@ defmodule Core.Router do
 
   pipeline :browser_auth do
     plug Guardian.Plug.VerifySession
+    plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureResource
-    plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
   end
 
   pipeline :api do

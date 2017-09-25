@@ -1,13 +1,13 @@
 defmodule Core.OAuth.Code do
-  @moddoc false
   use Ecto.Schema
   import Ecto.Changeset
   alias Core.OAuth.Code
 
   schema "oauth_codes" do
     field :code, :binary_id
-    field :user_id, :binary_id
-    field :client_id, :binary_id
+
+    belongs_to :user, Core.User
+    belongs_to :oauth_client, Core.OAuth.Client
 
     field :scope, :string
 
@@ -16,7 +16,7 @@ defmodule Core.OAuth.Code do
 
   def changeset(%Code{} = code, attrs) do
     code
-    |> cast(attrs, [:code, :user_id, :client_id, :scope])
+    |> cast(attrs, [:code, :scope])
     |> unique_constraint(:code)
   end
 end

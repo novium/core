@@ -57,8 +57,11 @@ defmodule Core.Router do
     scope "/v1" do
       pipe_through :api
       post "/token", OauthController, :token
+      get "/userinfo", OauthController, :userinfo
     end
   end
+
+  get "/.well-known/openid-configuration", Core.OpenidController, :index
 
   scope "/dev", Core do
     pipe_through :browser

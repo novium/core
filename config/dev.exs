@@ -36,7 +36,7 @@ config :phoenix, :stacktrace_depth, 20
 config :core, Core.Repo,
   adapter: Ecto.Adapters.MySQL,
   username: "root",
-  password: "",
+  password: "nopassword",
   database: "core_dev",
   hostname: "localhost",
   pool_size: 10

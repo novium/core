@@ -189,13 +189,6 @@ defmodule Core.OauthController do
       user <- Repo.get(Core.User, authorization.user_id),
       false <- is_nil(user)
     do
-<<<<<<< HEAD
-      json(conn, %{access_token: auth.token, refresh_token: auth.refresh_token, expires: auth.expires, email: user_db.email})
-    else
-      {:error, reason} ->
-        json(conn, %{error: "invalid_request", reason: "reason"})
-      _ -> json(conn, %{error: "invalid_request"})
-=======
       conn
       |> json(%{
         coreid: user.oid,
@@ -224,7 +217,6 @@ defmodule Core.OauthController do
       true
     else
       false
->>>>>>> 846b6214a7088cdbe75a3f43a641fd1bf31f6497
     end
   end
   defp check_authorization(_), do: false

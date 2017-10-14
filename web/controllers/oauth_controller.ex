@@ -213,7 +213,7 @@ defmodule Core.OauthController do
 
   defp check_authorization(nil), do: false
   defp check_authorization(%Core.OAuth.Authorization{} = authorization) do
-    if NaiveDateTime.compare(NaiveDateTime.add(authorization.inserted_at, authorization.expires), NaiveDateTime.utc_now) == :gt do
+    if NaiveDateTime.compare(NaiveDateTime.add(authorization.inserted_at, authorization.expires), NaiveDateTime.utc_now) == :lt do
       true
     else
       false

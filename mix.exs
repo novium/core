@@ -38,21 +38,21 @@ defmodule Core.Mixfile do
     [{:phoenix, "~> 1.2.1"},                                  # Phoenix Defaults
      {:phoenix_pubsub, "~> 1.0"},
      {:phoenix_ecto, "~> 3.0"},
-     {:mariaex, "~> 0.8.2"},
-     {:phoenix_html, "~> 2.6"},
-     {:phoenix_live_reload, "~> 1.0", only: :dev},
+     {:mariaex, "~> 0.8.3"},
+     {:phoenix_html, "~> 2.10.4"},
+     {:phoenix_live_reload, "~> 1.1.1", only: :dev},
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
 
      {:ueberauth, "~> 0.4.0"},                                # Authentication
      {:ueberauth_identity, "~> 0.2.3"},
      {:guardian, "~> 0.14.5"},
-     {:comeonin, "~> 4.0"},
-     {:pbkdf2_elixir, "~> 0.12"},
+     {:comeonin, "~> 4.0.2"},
+     {:pbkdf2_elixir, "~> 0.12.2"},
 
      {:email_checker, "~> 0.1.0"},                            # Validation
 
-     {:credo, "~> 0.8", only: [:dev, :test], runtime: false}  # Dev
+     {:credo, "~> 0.8.6", only: [:dev, :test], runtime: false}  # Dev
     ]
   end
 

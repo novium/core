@@ -1,6 +1,7 @@
 defmodule Core.Router do
   use Core.Web, :router
   require Ueberauth
+  require UeberauthNopass
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -19,6 +20,10 @@ defmodule Core.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  scope "/" do
+    UeberauthNopass.mount_html
   end
 
   scope "/", Core do

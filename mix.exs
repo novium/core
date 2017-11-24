@@ -24,7 +24,7 @@ defmodule Core.Mixfile do
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html,
                     :cowboy, :logger, :gettext,
                     :phoenix_ecto, :mariaex,
-                    :ueberauth, :ueberauth_identity]]
+                    :ueberauth, :ueberauth_identity, :ueberauth_nopass]]
   end
 
   # Specifies which paths to compile per environment.
@@ -46,9 +46,13 @@ defmodule Core.Mixfile do
 
      {:ueberauth, "~> 0.4.0"},                                # Authentication
      {:ueberauth_identity, "~> 0.2.3"},
+     {:ueberauth_nopass, path: "../ueberauth_nopass"},
      {:guardian, "~> 0.14.5"},
      {:comeonin, "~> 4.0.2"},
      {:pbkdf2_elixir, "~> 0.12.2"},
+
+     {:bamboo, "~> 0.8.0"}, # Email
+     {:bamboo_smtp, "~> 1.4"},
 
      {:email_checker, "~> 0.1.0"},                            # Validation
 

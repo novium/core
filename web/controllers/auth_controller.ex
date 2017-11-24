@@ -37,7 +37,7 @@ defmodule Core.AuthController do
       {:ok, user} ->
         conn
         |> Guardian.Plug.sign_in(user)
-        |> put_flash(:info, "registered") 
+        |> put_flash(:info, "registered")
         |> redirect_back(params)
       {:error, reason} ->
         %{"email" => email} = params
@@ -61,6 +61,12 @@ defmodule Core.AuthController do
         |> put_flash(:info, "Something wasn't right, try again!")
         |> redirect(to: "/auth/identity?email=" <> email <> "&" <> conn.query_string)
     end
+  end
+
+  # NOPASS Callback
+  def callback(%{assigns: %{ueberauth_auth: auth}} = conn, %{"provider" => "nopass", "code" => code} = params) do
+    conn
+    |> html("#{inspect auth}")
   end
 
   def signout(conn, _param) do

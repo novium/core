@@ -26,7 +26,7 @@ defmodule Core.AuthController do
   # Auth failed completely
   def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
     conn
-    |> put_flash(:error, "Failed to authenticate.")
+    |> put_flash(:error, "Failed to authenticate.  #{inspect _fails}")
     |> redirect(to: "/")
   end
 
@@ -64,9 +64,26 @@ defmodule Core.AuthController do
   end
 
   # NOPASS Callback
-  def callback(%{assigns: %{ueberauth_auth: auth}} = conn, %{"provider" => "nopass", "code" => code} = params) do
-    conn
-    |> html("#{inspect auth}")
+  def callback(%{assigns: %{ueberauth_auth: auth}} = conn, %{"provider" => "nopass"} = params) do
+    case Auth.find(auth) do
+      {:ok, user} ->
+        conn
+        |> Guardian.Plug.sign_in(user)
+        |> put_flash(:info, "Logged in!")
+        |> redirect_back(params)
+      {:error, reason} ->
+        case Auth.create(auth) do
+          {:ok, user} ->
+            conn
+            |> Guardian.Plug.sign_in(user)
+            |> put_flash(:info, "Logged in!")
+            |> redirect_back(params)
+          {:error, reason} ->
+            conn
+            |> put_flash(:error, "Something went wrong")
+            |> redirect(to: "/")
+        end
+    end
   end
 
   def signout(conn, _param) do

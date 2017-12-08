@@ -16,14 +16,15 @@ defmodule Auth do
          :ok <- validate_pass(auth.credentials)
     do
       # Password / Username OK, try to create account
-      result = User.changeset(
-        %User{},
+    result = %User{}
+    |> User.changeset(
         %{
           oid: Ecto.UUID.generate(),
           email: auth.info.email,
           password: hash_password(auth.credentials.other.password)
         }
-      ) |> Repo.insert
+    )
+    |> Repo.insert
 
       case result do
         {:ok, user} -> {:ok, user}
@@ -51,6 +52,18 @@ defmodule Auth do
     else
       {:error, reason} -> {:error, reason}
       _ -> {:error, "Something isn't right"}
+    end
+  end
+
+  def find(%Auth{provider: :nopass} = auth) do
+    with email <- auth.info.email,
+         user <- Repo.get_by(Core.User, email: email),
+         false <- is_nil(user)
+    do
+      {:ok, user}
+    else
+      {:error, reason} -> {:error, reason}
+      _ -> {:error, "Something went wrong"}
     end
   end
 

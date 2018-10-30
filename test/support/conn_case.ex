@@ -1,4 +1,4 @@
-defmodule Core.ConnCase do
+defmodule CoreWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -25,10 +25,10 @@ defmodule Core.ConnCase do
       import Ecto.Changeset
       import Ecto.Query
 
-      import Core.Router.Helpers
+      import CoreWeb.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint Core.Endpoint
+      @endpoint CoreWeb.Endpoint
     end
   end
 

@@ -10,11 +10,11 @@ config :core,
   ecto_repos: [Core.Repo]
 
 # Configures the endpoint
-config :core, Core.Endpoint,
+config :core, CoreWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "61GK+1WYLfa/CZWMp7weml9EKWbhz2TD+OD7QHqxx4pEiD5ZQgJjYzcG/SvGkXVi",
-  render_errors: [view: Core.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Core.PubSub,
+  render_errors: [view: CoreWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: CoreWeb.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
 config :ueberauth, Ueberauth,

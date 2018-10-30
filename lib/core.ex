@@ -11,7 +11,7 @@ defmodule Core do
       # Start the Ecto repository
       supervisor(Core.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(Core.Endpoint, []),
+      supervisor(CoreWeb.Endpoint, []),
 
       supervisor(Snowflake.Supervisor, [])
     ]

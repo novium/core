@@ -12,12 +12,14 @@ defmodule CoreWeb.API.OAuthController do
 
     def create(conn, %{"name" => name,
                         "url" => url,
-                        "redirect" => redirect} = _params) do
+                        "redirect" => redirect,
+                        "img" => img} = _params) do
         data = %{
             cid: Ecto.UUID.generate,
             name: name,
             url: url,
             redirect: redirect,
+            image: img,
             secret: Ecto.UUID.generate,
             trusted: true # TODO
         }

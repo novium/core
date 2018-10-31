@@ -46,7 +46,7 @@ defmodule Core.Mixfile do
      {:plug, "~> 1.7"},
      {:ecto_sql, "~> 3.0-rc"},
 
-     
+     {:cors_plug, "~> 1.5"},
 
      {:ueberauth, "~> 0.4.0"},                                # Authentication
      {:ueberauth_identity, "~> 0.2.3"},

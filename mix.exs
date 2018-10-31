@@ -51,7 +51,7 @@ defmodule Core.Mixfile do
      {:ueberauth, "~> 0.4.0"},                                # Authentication
      {:ueberauth_identity, "~> 0.2.3"},
      {:ueberauth_nopass, path: "../ueberauth_nopass"},
-     {:guardian, "~> 0.14.5"},
+     {:guardian, "~> 1.1"},
      {:comeonin, "~> 4.0.2"},
      {:pbkdf2_elixir, "~> 0.12.2"},
 

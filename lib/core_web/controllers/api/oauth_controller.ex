@@ -1,10 +1,11 @@
 defmodule CoreWeb.API.OAuthController do
     use CoreWeb.Web, :controller
+
     alias Core.Repo
     alias Core.OAuth.Client
 
     def list(conn, _params) do
-        clients = Repo.all(Client);
+        clients = Repo.all(Client)
         conn 
         |> json(clients)
     end

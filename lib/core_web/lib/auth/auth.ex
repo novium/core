@@ -72,7 +72,7 @@ defmodule Auth do
   """
   def validate_pass(%{other: %{password: nil}}), do: {:error, "Password required"}
   def validate_pass(%{other: %{password: pw}}) do
-    if String.length(pw) <= 8 do
+    if String.length(pw) <= 2 do
       {:error, "Password is too short"}
     else
       :ok

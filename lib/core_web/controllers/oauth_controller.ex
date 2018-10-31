@@ -3,7 +3,6 @@ defmodule CoreWeb.OauthController do
   Oauth2 Controller
   """
   use CoreWeb.Web, :controller
-  use Guardian.Phoenix.Controller
   alias Core.OAuth.Client
   alias Core.OAuth.Code
   alias Core.OAuth.Authorization
@@ -16,10 +15,12 @@ defmodule CoreWeb.OauthController do
   """
   def authorize(
     %{method: "GET"} = conn,
-    %{"response_type" => "code", "client_id" => cid, "scope" => scope} = params, {:ok, user}, claims
+    %{"response_type" => "code", "client_id" => cid, "scope" => scope} = params
   ) do
     if String.length(scope) == 0, do: conn |> put_status(400) |> text("Malformed request")
-    
+
+    user = Guardian.Plug.current_resource(conn)
+
     case Repo.get_by(Core.OAuth.Authorization, user_id: user.id) do # TODO: Check scopes!
       nil ->
         case Repo.get_by(Client, cid: cid) do
@@ -40,8 +41,10 @@ defmodule CoreWeb.OauthController do
   """
   def authorize(
     %{method: "POST"} = conn,
-    %{"client_id" => client_id, "scope" => scope}, {:ok, user}, claims
+    %{"client_id" => client_id, "scope" => scope}
   ) do
+    
+    user = Guardian.Plug.current_resource(conn)
     authorize_f(conn, client_id, scope, user)
   end
 
@@ -75,7 +78,7 @@ defmodule CoreWeb.OauthController do
   defp find_scope(scopes, scope), do: not (Enum.find_value(scopes, fn a -> a == scope end) |> is_nil)
 
   # Bad request
-  def authorize(conn, _params, _user, _claims) do
+  def authorize(conn, _params) do
     conn
     |> put_status(400)
     |> text("Malformed request")
@@ -90,7 +93,7 @@ defmodule CoreWeb.OauthController do
   "redirect_uri" => redirect,
   "client_id" => client_id,
   "client_secret" => client_secret
-  }, _user, _claims
+  }
   ) do
     with client <- Repo.get_by(Core.OAuth.Client, cid: client_id),
       code <- Repo.get_by(Code, code: code),
@@ -167,7 +170,8 @@ defmodule CoreWeb.OauthController do
     |> NaiveDateTime.diff(NaiveDateTime.utc_now)
   end
 
-  def userinfo(conn, params, _user, _claims) do
+  """
+  def userinfo(conn, params) do
     if Enum.count(get_req_header(conn, "authorization")) > 0 do
       case token_from_header(get_req_header(conn, "authorization")) do
         {:ok, token} -> conn |> userinfo(token)
@@ -199,6 +203,7 @@ defmodule CoreWeb.OauthController do
     end
 
   end
+  """
 
   defp token_from_header([header]) do
     header = String.split(header)

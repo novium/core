@@ -1,5 +1,6 @@
 defmodule CoreWeb.Router do
   use CoreWeb.Web, :router
+
   require Ueberauth
   require UeberauthNopass
 
@@ -11,11 +12,12 @@ defmodule CoreWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :authorized do
+    plug CoreWeb.Guardian.BrowserAuthPipeline
+  end
+
   pipeline :browser_auth do
-    plug Guardian.Plug.VerifySession
-    plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
-    plug Guardian.Plug.LoadResource
-    plug Guardian.Plug.EnsureResource
+    plug CoreWeb.Guardian.BrowserAuthPipeline
   end
 
   pipeline :api do

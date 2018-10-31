@@ -1,8 +1,6 @@
 defmodule CoreWeb.AuthController do
   use CoreWeb.Web, :controller
   plug Ueberauth
-  plug Guardian.Plug.VerifySession
-  plug Guardian.Plug.EnsureNotAuthenticated, handler: Core.AuthController
 
   alias Auth
   alias Ueberauth.Strategy.Helpers
@@ -36,7 +34,7 @@ defmodule CoreWeb.AuthController do
     case Auth.create(auth) do
       {:ok, user} ->
         conn
-        |> Guardian.Plug.sign_in(user)
+        |> CoreWeb.Guardian.Plug.sign_in(user)
         |> put_flash(:info, "registered")
         |> redirect_back(params)
       {:error, reason} ->
@@ -52,7 +50,7 @@ defmodule CoreWeb.AuthController do
     case Auth.find(auth) do
       {:ok, user} ->
         conn
-        |> Guardian.Plug.sign_in(user)
+        |> CoreWeb.Guardian.Plug.sign_in(user)
         |> put_flash(:info, "Logged in!")
         |> redirect_back(params)
       {:error, reason} ->
@@ -68,14 +66,14 @@ defmodule CoreWeb.AuthController do
     case Auth.find(auth) do
       {:ok, user} ->
         conn
-        |> Guardian.Plug.sign_in(user)
+        |> CoreWeb.Guardian.Plug.sign_in(user)
         |> put_flash(:info, "Logged in!")
         |> redirect_back(params)
       {:error, reason} ->
         case Auth.create(auth) do
           {:ok, user} ->
             conn
-            |> Guardian.Plug.sign_in(user)
+            |> CoreWeb.Guardian.Plug.sign_in(user)
             |> put_flash(:info, "Logged in!")
             |> redirect_back(params)
           {:error, reason} ->
@@ -88,7 +86,7 @@ defmodule CoreWeb.AuthController do
 
   def signout(conn, _param) do
     conn
-    |> Guardian.Plug.sign_out()
+    |> CoreWeb.Guardian.Plug.sign_out()
     |> put_flash(:info, "Signed out")
     |> redirect(to: "/")
   end

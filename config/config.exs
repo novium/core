@@ -31,15 +31,13 @@ config :ueberauth, Ueberauth,
               ]}
   ]
 
-config :guardian, Guardian,
-  allowed_algos: ["HS512"], # optional
-  verify_module: Guardian.JWT,  # optional
+config :core, CoreWeb.Guardian,
+  allowed_algos: ["HS512"],
   issuer: "Core",
   ttl: {30, :days},
   allowed_drift: 2000,
   verify_issuer: true, # optional
-  secret_key: "C+XnZx8nnSmHN87wRwGA99WPb3tieVDSFuWsGW6T0WgcwETQt/8g6lsRGELv9lLZ",
-  serializer: GuardianSerializer
+  secret_key: "C+XnZx8nnSmHN87wRwGA99WPb3tieVDSFuWsGW6T0WgcwETQt/8g6lsRGELv9lLZ"
 
 # Configures Elixir's Logger
 config :logger, :console,

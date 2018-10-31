@@ -65,6 +65,8 @@ defmodule CoreWeb.Router do
     scope "/v1" do
       pipe_through :api
       post "/token", OauthController, :token
+      get "/token", OauthController, :token
+      options "/token", OAuthController, :options
       get "/userinfo", OauthController, :userinfo
     end
   end

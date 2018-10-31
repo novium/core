@@ -15,10 +15,15 @@ defmodule CoreWeb.OauthController do
   """
   def authorize(
     %{method: "GET"} = conn,
+    %{"response_type" => "code", "client_id" => cid, "scope" => ""} = params
+  ) do
+    authorize(conn, %{"response_type" => "code", "client_id" => cid, "scope" => "default"})
+  end
+
+  def authorize(
+    %{method: "GET"} = conn,
     %{"response_type" => "code", "client_id" => cid, "scope" => scope} = params
   ) do
-    if String.length(scope) == 0, do: conn |> put_status(400) |> text("Malformed request")
-
     user = Guardian.Plug.current_resource(conn)
 
     case Repo.get_by(Core.OAuth.Authorization, user_id: user.id) do # TODO: Check scopes!
@@ -103,6 +108,61 @@ defmodule CoreWeb.OauthController do
       true <-
         client.cid == client_id
         && client.secret == client_secret
+        && client.redirect == redirect
+        && code.oauth_client_id == client.id,
+      scope <- decode_scopes(code.scope),
+      auth <- Repo.get_by(Core.OAuth.Authorization, user_id: code.user_id)
+    do
+      if is_nil(auth) do
+        changeset = %Authorization{user_id: user_db.id, oauth_client_id: client.id}
+        |> Authorization.changeset(
+          %{
+            token: Ecto.UUID.generate,
+            refresh_token: Ecto.UUID.generate,
+            scope: code.scope,
+            expires: expires(60 * 60 * 24 * 30)
+          }
+        )
+
+        case Repo.insert(changeset) do
+          {:ok, auth} ->
+            if find_scope(scope, "openid") do
+              openid_end(conn, user_db, code, auth)
+            else
+              oauth_end(conn, user_db, auth)
+            end
+          {:error, reason} -> Repo.rollback(reason)
+        end
+      else # TODO: Renew authorization
+        if find_scope(scope, "openid") do
+          openid_end(conn, user_db, code, auth)
+        else
+          oauth_end(conn, user_db, auth)
+        end
+      end
+    else
+      _ -> json(conn, %{error: "invalid_request", reason: "none"})
+    end
+  end
+
+  @doc """
+  Unauthenticated token exchange
+  TODO: MERGE
+  """
+  def token(conn,
+  %{
+  "code" => code,
+  "redirectUri" => redirect,
+  "clientId" => client_id,
+  }
+  ) do
+    with client <- Repo.get_by(Core.OAuth.Client, cid: client_id),
+      code <- Repo.get_by(Code, code: code),
+      false <- is_nil(client) || is_nil(code),
+      user_db <- Repo.get(Core.User, code.user_id),
+      false <- is_nil(user_db),
+      true <-
+        client.cid == client_id
         && client.redirect == redirect
         && code.oauth_client_id == client.id,
       scope <- decode_scopes(code.scope),

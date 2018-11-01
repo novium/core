@@ -25,6 +25,10 @@ defmodule CoreWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_authenticated do
+    plug CoreWeb.Plugs.OAuth
+  end
+
   scope "/" do
     UeberauthNopass.mount_html
   end
@@ -81,7 +85,7 @@ defmodule CoreWeb.Router do
   end
 
   scope "/api", CoreWeb do
-    pipe_through :api
+    pipe_through [:api, :api_authenticated]
 
     scope "/oauth", API do
       get "/list", OAuthController, :list

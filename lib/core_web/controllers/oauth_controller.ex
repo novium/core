@@ -11,7 +11,7 @@ defmodule CoreWeb.OauthController do
   @issuer "localhost:4001"
 
   @doc """
-  Begin authorization flow
+  Adds default scope if missing
   """
   def authorize(
     %{method: "GET"} = conn,
@@ -20,6 +20,9 @@ defmodule CoreWeb.OauthController do
     authorize(conn, %{"response_type" => "code", "client_id" => cid, "scope" => "default"})
   end
 
+  @doc """
+  Begin authorization flow
+  """
   def authorize(
     %{method: "GET"} = conn,
     %{"response_type" => "code", "client_id" => cid, "scope" => scope} = params

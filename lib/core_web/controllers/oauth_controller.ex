@@ -224,7 +224,7 @@ defmodule CoreWeb.OauthController do
   end
 
   defp oauth_end(conn, user, auth) do
-    json(conn, %{access_token: auth.token, refresh_token: auth.refresh_token, expires: auth.expires, email: user.email})
+    json(conn, %{access_token: auth.token, refresh_token: auth.refresh_token, expires: auth.expires})
   end
 
   defp expires(seconds) do

@@ -24,7 +24,8 @@ defmodule Core.Mixfile do
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html,
                     :cowboy, :logger, :gettext,
                     :phoenix_ecto, :mariaex,
-                    :ueberauth, :ueberauth_identity, :ueberauth_nopass]]
+                    :ueberauth, :ueberauth_identity, :ueberauth_nopass,
+                    :ecto_sql]]
   end
 
   # Specifies which paths to compile per environment.
@@ -35,16 +36,19 @@ defmodule Core.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:phoenix, "~> 1.4.0-rc", override: true},                                  # Phoenix Defaults
+    [{:phoenix, "~> 1.4.0-rc.3", override: true},                                  # Phoenix Defaults
      {:phoenix_pubsub, "~> 1.0"},
      {:phoenix_ecto, "~> 4.0"},
-     {:mariaex, "~> 0.9.0-rc.0"},
+     {:mariaex, "~> 0.9.0"},
      {:phoenix_html, "~> 2.10.4"},
      {:phoenix_live_reload, "~> 1.1.1", only: :dev},
      {:gettext, "~> 0.11"},
      {:plug_cowboy, "~> 2.0"},
      {:plug, "~> 1.7"},
-     {:ecto_sql, "~> 3.0-rc"},
+     {:ecto_sql, "~> 3.0.0"},
+     {:jason, "~> 1.0"},
+     {:telemetry, "~> 0.2.0"},
+     {:ecto, "~> 3.0", override: true},
 
      {:cors_plug, "~> 1.5"},
 

@@ -1,7 +1,8 @@
 defmodule CoreWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :core
 
-  socket "/socket", CoreWeb.UserSocket
+  socket "/socket", CoreWeb.UserSocket,
+    websocket: true
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -29,6 +30,8 @@ defmodule CoreWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
+
+  plug CORSPlug, origin: "*"
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.

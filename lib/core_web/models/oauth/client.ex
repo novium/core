@@ -25,9 +25,9 @@ defmodule Core.OAuth.Client do
   end
 
   @doc false
-  def changeset(%Client{} = client, attrs) do
+  def changeset(client, params \\ %{}) do
     client
-    |> cast(attrs, [:cid, :name, :url, :image, :redirect, :secret, :trusted])
+    |> cast(params, [:cid, :name, :url, :image, :redirect, :secret, :trusted])
     |> validate_required([:cid, :name, :url, :redirect, :secret, :trusted])
     |> unique_constraint(:name)
     |> unique_constraint(:cid)

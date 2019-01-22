@@ -9,6 +9,12 @@ use Mix.Config
 config :core,
   ecto_repos: [Core.Repo]
 
+# Disabled due to what seems to be a bug
+config :logger, level: :info
+
+
+config :phoenix, :json_library, Jason
+
 # Configures the endpoint
 config :core, CoreWeb.Endpoint,
   url: [host: "localhost"],

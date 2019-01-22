@@ -7,7 +7,7 @@ defmodule CoreWeb.API.OAuthController do
     def list(conn, _params) do
         clients = Repo.all(Client)
         conn 
-        |> json(clients)
+        |> render "list.json", data: clients
     end
 
     def create(conn, %{"name" => name,

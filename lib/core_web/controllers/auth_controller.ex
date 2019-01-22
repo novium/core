@@ -3,13 +3,12 @@ defmodule CoreWeb.AuthController do
   plug Ueberauth
 
   alias Auth
-  alias Ueberauth.Strategy.Helpers
 
   def index(conn, _params) do
     render(conn, "index.html")
   end
 
-  def request(conn, %{"provider" => provider} = params) do
+  def request(conn, %{"provider" => provider} = _params) do
     case provider do
       "identity" ->
         conn |> render("request.html")
@@ -22,9 +21,9 @@ defmodule CoreWeb.AuthController do
   # Callbacks
 
   # Auth failed completely
-  def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
+  def callback(%{assigns: %{ueberauth_failure: fails}} = conn, _params) do
     conn
-    |> put_flash(:error, "Failed to authenticate.  #{inspect _fails}")
+    |> put_flash(:error, "Failed to authenticate.  #{inspect fails}")
     |> redirect(to: "/")
   end
 
@@ -53,7 +52,7 @@ defmodule CoreWeb.AuthController do
         |> CoreWeb.Guardian.Plug.sign_in(user)
         |> put_flash(:info, "Logged in!")
         |> redirect_back(params)
-      {:error, reason} ->
+      {:error, _} ->
         %{"email" => email} = params
         conn
         |> put_flash(:info, "Something wasn't right, try again!")
@@ -69,14 +68,14 @@ defmodule CoreWeb.AuthController do
         |> CoreWeb.Guardian.Plug.sign_in(user)
         |> put_flash(:info, "Logged in!")
         |> redirect_back(params)
-      {:error, reason} ->
+      {:error, _} ->
         case Auth.create(auth) do
           {:ok, user} ->
             conn
             |> CoreWeb.Guardian.Plug.sign_in(user)
             |> put_flash(:info, "Logged in!")
             |> redirect_back(params)
-          {:error, reason} ->
+          {:error, _} ->
             conn
             |> put_flash(:error, "Something went wrong")
             |> redirect(to: "/")

@@ -10,5 +10,6 @@ defmodule CoreWeb.API.OAuthView do
 
     def render("list.json", %{data: client}) do
         client
+        |> Map.take([:cid, :name, :url, :image, :redirect, :trusted])
     end
 end

@@ -8,6 +8,15 @@ defmodule CoreWeb.AuthController do
     render(conn, "index.html")
   end
 
+  def request(conn, %{"provider" => "nopass"} = _params) do
+    case conn.assigns[:status] do
+      nil ->
+        conn |> put_view(CoreWeb.AuthView) |> render("nopass.html")
+      :ok_waiting ->
+        conn |> put_view(CoreWeb.AuthView) |> render("nopass_waiting.html")
+    end
+  end
+
   def request(conn, %{"provider" => provider} = _params) do
     case provider do
       "identity" ->
@@ -101,6 +110,14 @@ defmodule CoreWeb.AuthController do
         conn
         |> put_session(:auth_redirect, nil)
         |> redirect(external: url)
+    end
+  end
+
+  def loggedin(conn, _params) do
+    if Guardian.Plug.current_resource(conn) do
+      conn |> text("true")
+    else
+      conn |> text("false")
     end
   end
 end

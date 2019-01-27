@@ -1,0 +1,16 @@
+<div class="row justify-content-center">
+    <div class="col-8" >
+        <div class="auth-box">
+            <div class="auth-box-left"></div>
+            <div class="auth-box-right"></div>
+
+            <div class="auth-box-content">
+                <h1>sign in</h1>
+                <%= form_for @conn, Routes.auth_path(@conn, :request, "nopass"), [class: "auth-form"], fn f -> %>
+                    <%=  email_input f, :email, [class: "form-control", placeholder: "email"] %>
+                    <input type="submit" class="btn btn-primary" value="log in">
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>

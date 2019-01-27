@@ -12,6 +12,10 @@ defmodule CoreWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :fetch_session_p do
+    plug :fetch_session
+  end
+
   pipeline :authorized do
     plug CoreWeb.Guardian.BrowserAuthPipeline
   end
@@ -45,12 +49,19 @@ defmodule CoreWeb.Router do
   end
 
   scope "/auth", CoreWeb do
+    pipe_through [:fetch_session_p, :api, :authorized]
+
+    get "/loggedin", AuthController, :loggedin
+  end
+
+  scope "/auth", CoreWeb do
     pipe_through :browser
 
     get "/", AuthController, :index
     get "/exit", AuthController, :signout
 
     get "/:provider", AuthController, :request
+    post "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
     post "/:provider/callback", AuthController, :callback
   end

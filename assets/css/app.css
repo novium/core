@@ -1,9 +1,179 @@
 /* This file is for your main application css. */
 
-section.container {
-  max-width: 80rem;
+body {
+    background: rgb(240,240,240);
 }
 
-section.container.auth {
-  max-width: 35rem;
+.auth-box {
+    margin-top: 5rem;
+}
+
+.auth-box-left {
+    display: inline-block;
+    position: relative;
+    background: rgb(40, 40, 40);
+    width: 80%;
+    height: 20rem;
+    border-top-left-radius: 0.2rem;
+    border-bottom-left-radius: 0.2rem;
+
+    box-shadow: 0 0 1rem rgba(0,0,0,.25);
+    z-index: 1;
+}
+
+.auth-box-right {
+    float: right;
+    position: relative;
+    background: rgb(220, 220, 220);
+    width: 20%;
+    height: 20rem;
+    border-bottom-right-radius: 0.2rem;
+    border-top-right-radius: 0.2rem;
+
+    box-shadow: 0 0 1rem rgba(0,0,0,.25);
+    z-index: 1;
+}
+
+.auth-box-content {
+    color: white;
+    display: inline;
+    position: absolute;
+    left: 6rem;
+    right: 6rem;
+    top: 8rem;
+
+    z-index: 2;
+}
+
+.auth-form {
+    margin-top: 3rem;
+}
+
+.status-text {
+    font-family: Raleway;
+    color: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    left: 30%;
+    top: 16rem;
+    animation: .5s ease-in-out 0s 1 fadeIn;
+
+    z-index: 2;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    70% { opacity: 0; }
+    100% { opacity: 1 }
+}
+
+
+/* Animate in waiting */
+
+.auth-box-left.waiting {
+    width: 20%;
+
+    animation: .5s ease-in-out 0s 1 switchLeftClose;
+}
+
+.auth-box-right.waiting {
+    background-color: rgb(214, 218, 20);
+    width: 80%;
+    
+    animation: .5s ease-in-out 0s 1 switchRightOpen;
+}
+
+.auth-box-content.waiting {
+    color: rgba(0, 0, 0, 0.4);
+    left: 30%;
+    top: 12rem;
+
+    animation: .5s ease-in-out 0s 1 switchContentWait;
+}
+
+@keyframes switchLeftClose {
+    0% {
+        width: 80%;
+    }
+}
+
+@keyframes switchRightOpen {
+    0% {
+        width: 20%;
+        background: rgb(220, 220, 220); 
+    }
+}
+
+@keyframes switchContentWait {
+    0% {
+        color: white;
+        left: 6rem;
+        top: 8rem;
+    }
+}
+
+/* Done */
+
+.auth-box-left.done {
+    width: 20%;
+
+    animation: .5s ease-in-out 0s 1 switchLeftCloseDone;
+}
+
+.auth-box-right.done {
+    background-color: rgb(20, 218, 20);
+    width: 80%;
+    
+    animation: .5s ease-in-out 0s 1 switchRightOpenDone;
+}
+
+.auth-box-content.done {
+    left: 30%;
+    top: 12rem;
+    color: rgb(50,78,0);
+}
+
+@keyframes switchLeftCloseDone {
+    0% {
+    }
+}
+
+@keyframes switchRightOpenDone {
+    0% {
+        background: rgb(214, 218, 20); 
+    }
+}
+
+
+
+
+h1 {
+    font-family: Raleway;
+    font-weight: 300;
+}
+
+input[type="email"] {
+    color: white;
+    background-color: rgb(70, 70, 70);
+    outline: none;
+    border: 0;
+    border-radius: 0.2rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, .25);
+}
+
+input[type="email"]:focus {
+    color: white;
+    background-color: rgb(75,75,75);
+    outline: none;
+    border: 0;
+    box-shadow: 0 0 1.5rem rgba(0, 0, 0, .6);
+}
+
+::placeholder {
+    color: rgb(200,200,200) !important;
+    opacity: 1;
+}
+
+.btn {
+    
 }

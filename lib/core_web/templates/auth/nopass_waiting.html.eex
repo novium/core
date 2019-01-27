@@ -1,0 +1,45 @@
+<div class="row justify-content-center">
+    <script>
+        function poll() {
+            var xhttp;
+            xhttp=new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200 && this.responseText == "true") {
+                    ready(this);
+                } else {
+                    if(this.readyState == 4 && this.status == 200 && this.responseText == "false")
+                        setTimeout(poll, 3000);
+                }
+            };
+            xhttp.open("GET", "/auth/loggedin", true);
+            xhttp.send();
+        }
+
+        function ready(t) {
+            document.getElementById("auth-box-left").classList.remove("waiting");
+            document.getElementById("auth-box-right").classList.remove("waiting");
+            document.getElementById("auth-box-content").classList.remove("waiting");
+
+            document.getElementById("auth-box-left").classList.add("done");
+            document.getElementById("auth-box-right").classList.add("done");
+            document.getElementById("auth-box-content").classList.add("done");
+            document.getElementById("status").innerHTML = "signed in!";
+            document.getElementById("status-text").innerHTML = "please wait...";
+        }
+
+        poll();
+    </script>
+
+    <div class="col-8" >
+        <div class="auth-box">
+            <div id="auth-box-left" class="auth-box-left waiting"></div>
+            <div id="auth-box-right" class="auth-box-right waiting"></div>
+
+            <div id="auth-box-content" class="auth-box-content waiting">
+                <h1 id="status">waiting</h1>
+            </div>
+
+            <p id="status-text" class="status-text">a link has been sent to your email, click it</p>
+        </div>
+    </div>
+</div>

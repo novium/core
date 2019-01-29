@@ -11,7 +11,7 @@
                         setTimeout(poll, 3000);
                 }
             };
-            xhttp.open("GET", "/auth/loggedin", true);
+            xhttp.open("GET", "/auth/nopass/callback/?id=<%= Plug.Conn.get_session(@conn, "id") %>&check=1", true);
             xhttp.send();
         }
 
@@ -25,6 +25,8 @@
             document.getElementById("auth-box-content").classList.add("done");
             document.getElementById("status").innerHTML = "signed in!";
             document.getElementById("status-text").innerHTML = "please wait...";
+
+            window.location.replace("/auth/nopass/callback/?id=<%= Plug.Conn.get_session(@conn, "id") %>&authenticate=1");
         }
 
         poll();

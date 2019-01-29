@@ -37,6 +37,30 @@ defmodule Auth do
     end
   end
 
+  def create(%Auth{provider: :nopass} = auth) do
+    with :ok <- validate_mail(auth.info)
+    do
+      # Password / Username OK, try to create account
+    result = %User{}
+    |> User.changeset(
+        %{
+          oid: Ecto.UUID.generate(),
+          email: auth.info.email
+        }
+    )
+    |> Repo.insert
+
+      case result do
+        {:ok, user} -> {:ok, user}
+        {:error, reason} ->
+          {:error, "Did you forget your password? Seems like your email is already registered"}
+      end
+    else
+      {:error, reason} -> {:error, reason}
+      _ -> {:error, "Unknown"}
+    end
+  end
+
   @doc """
   Find user
   """

@@ -24,6 +24,10 @@ defmodule CoreWeb.Router do
     plug CoreWeb.Guardian.BrowserAuthPipeline
   end
 
+  pipeline :browser_ensure_auth do
+    plug Guardian.Plug.EnsureAuthenticated
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -70,7 +74,7 @@ defmodule CoreWeb.Router do
   scope "/oauth", CoreWeb do
     # Frontend
     scope "/v1" do
-      pipe_through [:browser, :browser_auth]
+      pipe_through [:browser, :browser_auth, :browser_ensure_auth]
       get "/authorize", OauthController, :authorize
       post "/authorize", OauthController, :authorize
     end
@@ -110,7 +114,7 @@ defmodule CoreWeb.Router do
       <> ":" <> Integer.to_string(conn.port)
       <> conn.request_path <> "?" <> conn.query_string)
     |> put_flash(:info, "Please log in")
-    |> Phoenix.Controller.redirect(to: "/auth/identity")
+    |> Phoenix.Controller.redirect(to: "/auth/nopass")
   end
 
   # Other scopes may use custom stacks.

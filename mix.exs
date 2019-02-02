@@ -59,8 +59,8 @@ defmodule Core.Mixfile do
      {:comeonin, "~> 4.0.2"},
      {:pbkdf2_elixir, "~> 0.12.2"},
 
-     {:bamboo, "~> 0.8.0"}, # Email
-     {:bamboo_smtp, "~> 1.4"},
+     {:bamboo, "~> 1.2"}, # Email
+     {:bamboo_smtp, "~> 1.6"},
 
      {:email_checker, "~> 0.1.0"},                            # Validation
 

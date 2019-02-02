@@ -36,6 +36,10 @@ defmodule CoreWeb.Router do
     plug CoreWeb.Plugs.OAuth
   end
 
+  if Mix.env == :dev do
+    forward "/sent_emails", Bamboo.SentEmailViewerPlug
+  end
+
   scope "/" do
     UeberauthNopass.mount_html
   end
